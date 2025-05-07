@@ -13,8 +13,8 @@ from models import db, bcrypt
 from dotenv import load_dotenv
 from flask_jwt_extended import JWTManager
 from utils import redis_client  
-from routes.authentication import auth_bp 
-from routes.charity import charity_bp 
+from routes.authentication import auth_bp  
+from routes.charity import charity_bp  
 from routes.admin import admin_bp
 from routes.stories import story_bp
 from routes.donations import donation_bp
@@ -45,7 +45,7 @@ def create_app():
 
     # Register blueprints
     app.register_blueprint(auth_bp, url_prefix='/auth')
-    app.register_blueprint(charity_bp, url_prefix='/charity')  # base URL becomes /charity
+    app.register_blueprint(charity_bp, url_prefix='/charity')  
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(story_bp, url_prefix='/stories')
     app.register_blueprint(donation_bp, url_prefix='/donations')
@@ -54,9 +54,12 @@ def create_app():
 
     return app
 
+# Create a global WSGI app for Gunicorn
+app = create_app()
+
 if __name__ == '__main__':
-    app = create_app()
+    # Ensure tables are created when running locally
     with app.app_context():
         db.create_all()
         print("Database tables created.")
-    app.run()
+    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 5000)))
